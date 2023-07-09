@@ -56,7 +56,7 @@ namespace Client
                     if (msg.Length > 0)
                     {
                         
-                        logTextBox.AppendText(string.Format("[ {0} ] {1}{2}", DateTime.Now.ToString("HH:mm"), (msg), Environment.NewLine));
+                        logTextBox.AppendText(string.Format("[ {0} ] {1}{2}", DateTime.Now.ToString("HH:mm"), (RemoveNonAlphaNumeric(msg)), Environment.NewLine));
                        // logTextBox.AppendText(msg);
                     }
                     else

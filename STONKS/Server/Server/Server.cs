@@ -223,21 +223,12 @@ namespace Server
                             dekriptovana = serverDK.Decrypt(Convert.FromBase64String(data["publicKey"]), Convert.FromBase64String(data["message"]), Convert.FromBase64String(data["IV"]));
                         }
 
-                        /*
-                        foreach (KeyValuePair<long, MyClient> klijent in clients)
-                        {
-                            if (klijent.Value.id == obj.id)
-                            {
-                                 dekriptovana = serverDK.Decrypt(Convert.FromBase64String(klijent.Value.keyString.ToString()), Convert.FromBase64String(enkriptovanap), Convert.FromBase64String(klijent.Value.IVString.ToString()));
-                            }
-                        }*/
-
-                        //string dekriptovana = serverDK.Decrypt(KLJUC, Convert.FromBase64String(enkriptovanap),IV);
+                        
+                        
                         string dekriptovanaSaUserInfo = string.Format("{0}: {1}", obj.username, dekriptovana);
                         // Prikaz dekriptovane poruke
-                        //Log(dekriptovana+"OVO JE TO STO JEBE KOKE");
 
-                        Log(RemoveNonAlphaNumeric(dekriptovana));
+                        Log(RemoveNonAlphaNumeric(dekriptovanaSaUserInfo));
 
                        /* System.Diagnostics.Debug.WriteLine(enkriptovanap);
                         System.Diagnostics.Debug.WriteLine("kljuc"+Convert.ToBase64String(KLJUC));
@@ -308,17 +299,15 @@ namespace Server
                                 tmp.keyString = klijent.Value.keyString;
                                 tmp.stream = klijent.Value.stream;
                                 Send(Poruka(secretMessage), tmp);
-                                //Send(dekriptovana+"foreach", obj.id);
                                 // Briše podatke StringBuilder-a za sledeću poruku
-                               // obj.data.Clear();
                                 tmp.data.Clear();
                                 // Signalizira niti na čekanju da je operacija završena
-                               // obj.handle.Set();
                                 tmp.handle.Set();
                             }
                         });
 
                         parallelWatch.Stop();
+                        System.Diagnostics.Debug.WriteLine("Broj klijenata: " + Convert.ToString(clients.Count));
                         System.Diagnostics.Debug.WriteLine("foreach exec time: " + Convert.ToString(foreachWatch.Elapsed));
                         System.Diagnostics.Debug.WriteLine("parallel foreach exec time: " + Convert.ToString(parallelWatch.Elapsed));
                         
@@ -416,28 +405,15 @@ namespace Server
                             JavaScriptSerializer jsonServ = new JavaScriptSerializer(); 
                             Send(jsonServ.Serialize(servData),obj);
                             
-                            // Slanje serverovog IV klijentu                            
-                            /*Dictionary<string, string> servIV = new Dictionary<string, string>();
-                              servIV.Add("IV", Convert.ToBase64String(serverDK.IV));
-                              Send(jsonServ.Serialize(servIV), obj);*/
-
-                            /*var message = new
-                            {
-                                status = "key",
-                                publicKey = BitConverter.ToString(serverDK.PublicKey)
-                            };
-                            JavaScriptSerializer jsonServ = new JavaScriptSerializer();
-                            //string jsonMessage = new JavaScriptSerializer().Serialize(message);
-                            Send(jsonServ.Serialize(message));
-                            System.Diagnostics.Debug.WriteLine(jsonServ.Serialize(message));*/
+                            
                             Send("{\"status\": \"authorized\"}", obj);
+
+                            //logovanje podataka i poslatih
+                            //potrebno je da postoji podudaranje kako bi znali da se salju ispravni podaci
                             System.Diagnostics.Debug.WriteLine("Kljuc servera "+Convert.ToBase64String(serverDK.PublicKey));
                             System.Diagnostics.Debug.WriteLine("IV servera " + Convert.ToBase64String(serverDK.IV));
                             System.Diagnostics.Debug.WriteLine("Poslati kljuc servera " + servData["publicKey"]);
                             System.Diagnostics.Debug.WriteLine("Poslati IV servera " + servData["IV"]);
-
-                            /////
-                            // Send(Encoding.UTF8.GetString(serverDK.PublicKey),obj.id);
                         }
 
                         // Čišćenje StringBuilder objekta "data" za sledeću poruku
@@ -507,22 +483,7 @@ namespace Server
                 // dodajemo klijenta u grid
                 AddToGrid(obj.id, obj.username.ToString());
                 // prikazuje poruku sa imenom klijenta
-                string msg = string.Format("{0} has connected", obj.username);
-
-
-                
-                /*Parallel.ForEach(clients.Values, client =>
-                {
-                    long clientId = client.id;
-                    byte[] pubKey = client.pubKey;
-                    byte[] IV = client.IV;
-
-                    // Use the retrieved values as needed
-                    System.Diagnostics.Debug.WriteLine("ajde sad");
-                    System.Diagnostics.Debug.WriteLine($"Client ID: {clientId}, PublicKey: {BitConverter.ToString(pubKey)}, IV: {BitConverter.ToString(IV)}");
-                });*/
-                //*********//
-                //System.Diagnostics.Debug.WriteLine(obj.username);
+                string msg = string.Format("{0} has connected", obj.username);                
                 // Logovanje poruke
                 Log(SystemMsg(msg));
                 // Slanje poruke ostalim klijentima
@@ -548,16 +509,13 @@ namespace Server
                         tmpConnected.keyString = klijent.Value.keyString;
                         tmpConnected.stream = klijent.Value.stream;
                         Send(Poruka(secretMessage), tmpConnected);
-                        //Send(dekriptovana+"foreach", obj.id);
                         // Briše podatke StringBuilder-a za sledeću poruku
-                        // obj.data.Clear();
                         tmpConnected.data.Clear();
                         // Signalizira niti na čekanju da je operacija završena
-                        // obj.handle.Set();
                         tmpConnected.handle.Set();
                     }
                 }
-               // Send(SystemMsg(msg), obj.id);
+               
 
 
 
@@ -566,8 +524,8 @@ namespace Server
                 // sto vise klijenata paralelizam bolji
                 // za jednog klijenta paralelizam je sporiji
 
+                /**********************************************************************************************************/
                 /*
-
                 System.Diagnostics.Debug.WriteLine("foreach");
 
                 var foreachWatch = System.Diagnostics.Stopwatch.StartNew();
@@ -615,6 +573,8 @@ namespace Server
                      // Use the retrieved values as needed
                      System.Diagnostics.Debug.WriteLine($"Client ID: {client.id}, PublicKey: {BitConverter.ToString(pubKey)}, IV: {BitConverter.ToString(IV)}");
                  }*/
+                /************************************************************************************************************************************/
+
 
                 // Petlja se izvršava sve dok je klijent povezan
                 while (obj.client.Connected)
@@ -933,7 +893,7 @@ namespace Server
                             long id = klijent.Value.id;
                             byte[] pubKey = Convert.FromBase64String(klijent.Value.keyString.ToString());
                             byte[] IV = Convert.FromBase64String(klijent.Value.IVString.ToString());
-                            byte[] secretMessage = serverDK.Encrypt(pubKey, string.Format("{0} (You): {1}", usernameTextBox.Text.Trim(), msg));
+                            byte[] secretMessage = serverDK.Encrypt(pubKey, string.Format("{0}: {1}", usernameTextBox.Text.Trim(), msg));
                         tmpSend.id = id;
                         tmpSend.pubKey = pubKey;
                         tmpSend.buffer = klijent.Value.buffer;
