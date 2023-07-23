@@ -29,7 +29,7 @@ namespace Client
             public string username; // username klijenta
             public string key; // kljuc za povezivanje na server (ako je potreban)
             public byte[] pubKey; // public key
-            //public byte[] IV; // Initialization vector
+            public byte[] IV; // Initialization vector
             public TcpClient client; // TCP objekat za komunikaciju
             public NetworkStream stream; // Stream za slanje podataka preko mreze
             public byte[] buffer; // buffer za podatke
@@ -55,9 +55,9 @@ namespace Client
                 {
                     if (msg.Length > 0)
                     {
-                        
+
                         logTextBox.AppendText(string.Format("[ {0} ] {1}{2}", DateTime.Now.ToString("HH:mm"), (RemoveNonAlphaNumeric(msg)), Environment.NewLine));
-                       // logTextBox.AppendText(msg);
+                        // logTextBox.AppendText(msg);
                     }
                     else
                     {
@@ -91,7 +91,7 @@ namespace Client
                 {
                     connected = status;
                     if (status)
-                    {   
+                    {
                         //kad se uspostavi konekcija iskljucuju se kontrole za podesavanje prametara konekcije
                         //mijenja se tekst dugmeta za konekciju i prikazuje se poruka da je konekcija ostvarena
                         addrTextBox.Enabled = false;
@@ -149,12 +149,9 @@ namespace Client
                     else
                     {
                         //prikaz akumuliranih podataka i resetovanje StringBuilder-a
-                       // Log(obj.data.ToString());
-                        JavaScriptSerializer json = new JavaScriptSerializer(); // feel free to use JSON serializer
+                        JavaScriptSerializer json = new JavaScriptSerializer();
                         //rjecnik za primljenje podatke koji se sastoji od kljuca i podataka
                         Dictionary<string, string> data = json.Deserialize<Dictionary<string, string>>(obj.data.ToString());
-
-                        //Dictionary<string, byte[]> publicKeyData = json.Deserialize<Dictionary<string, byte[]>>(obj.data.ToString());
 
                         //primanje public key servera
                         if (data.ContainsKey("publicKey"))
@@ -168,15 +165,16 @@ namespace Client
                             // dekodiranje i pamcenje kljuca
                             serverIV = Convert.FromBase64String(receivedServerIV);
                             enkriptovanaPorukaServera = data["message"];
-                            //ispis u konzoli za potrebe dev faze, kasnije zakomentarisati
+
+                            /*DIJAGNOSTIKA*/
                             System.Diagnostics.Debug.WriteLine(receivedServerIV);
                             System.Diagnostics.Debug.WriteLine(receivedServerKey);
                             System.Diagnostics.Debug.WriteLine("kljuc klijenta" + Convert.ToBase64String(klijentDK.PublicKey));
                             System.Diagnostics.Debug.WriteLine(json.Serialize(serverKey));
                             System.Diagnostics.Debug.WriteLine(json.Serialize(klijentDK));
+                            /*************************/
                         }
                         Log(Dekriptor(Convert.FromBase64String(enkriptovanaPorukaServera)));
-                        Log("\n");
                         System.Diagnostics.Debug.WriteLine(Dekriptor(Convert.FromBase64String(enkriptovanaPorukaServera)));
                         obj.data.Clear();
                         obj.handle.Set();// Signal da su podaci primljeni
@@ -192,7 +190,7 @@ namespace Client
             else
             {
 
-                
+
                 obj.client.Close(); // zatvaranje konekcije ako nema podataka
                 obj.handle.Set(); // Signal da je konekcija zatvorena
             }
@@ -225,12 +223,10 @@ namespace Client
                     else
                     {
                         //serijalizacija podataka
-                        JavaScriptSerializer json = new JavaScriptSerializer(); // feel free to use JSON serializer
+                        JavaScriptSerializer json = new JavaScriptSerializer();
                         //rjecnik za primljenje podatke koji se sastoji od kljuca i podataka
                         Dictionary<string, string> data = json.Deserialize<Dictionary<string, string>>(obj.data.ToString());
 
-                        //Dictionary<string, byte[]> publicKeyData = json.Deserialize<Dictionary<string, byte[]>>(obj.data.ToString());
-                        
                         //primanje public key servera
                         if (data.ContainsKey("publicKey"))
                         {
@@ -242,34 +238,22 @@ namespace Client
                             receivedServerIV = data["IV"];
                             // dekodiranje i pamcenje kljuca
                             serverIV = Convert.FromBase64String(receivedServerIV);
-                            //ispis u konzoli za potrebe dev faze, kasnije zakomentarisati
+                            /*DIJAGNOSTIKA*/
                             System.Diagnostics.Debug.WriteLine(receivedServerIV);
                             System.Diagnostics.Debug.WriteLine(receivedServerKey);
-                            System.Diagnostics.Debug.WriteLine("kljuc klijenta"+Convert.ToBase64String(klijentDK.PublicKey));
+                            System.Diagnostics.Debug.WriteLine("kljuc klijenta" + Convert.ToBase64String(klijentDK.PublicKey));
                             System.Diagnostics.Debug.WriteLine(json.Serialize(serverKey));
                             System.Diagnostics.Debug.WriteLine(json.Serialize(klijentDK));
-
-                            //System.Diagnostics.Debug.WriteLine(klijentDK.PublicKey);
-
-                            //primanje IV servera
-                            /*if (data.ContainsKey("IV"))
-                            {
-                                receivedServerIV = data["IV"];
-                                // dekodiranje i pamcenje kljuca
-                                serverIV = Convert.FromBase64String(receivedServerIV);
-                                //ispis u konzoli za potrebe dev faze, kasnije zakomentarisati
-                                System.Diagnostics.Debug.WriteLine(receivedServerIV);
-
-                            }*/
+                            /**************************/
                         }
-                        
+
 
 
                         // provjera da li je konekcija uspjesna
                         if (data.ContainsKey("status") && data["status"].Equals("authorized"))
                         {
-                            
-                            
+
+
                             Connected(true);
                         }
                         obj.data.Clear();
@@ -499,7 +483,7 @@ namespace Client
                 }
                 catch (Exception ex)
                 {
-                   
+
                     Log(ErrorMsg(ex.Message)); // ako je doslo do greske prikazuje se poruka
                 }
             }
@@ -582,8 +566,8 @@ namespace Client
                     // konvertujemo enkriptovanu poruku iz niza bajtova u string
                     // ova se poruka salje
                     string msg = Convert.ToBase64String(secretMessage);// + (Encoding.UTF8.GetString(klijentDK.PublicKey));
-                    
-                    
+
+
                     //System.Diagnostics.Debug.WriteLine(Encoding.UTF8.GetString(klijentDK.PublicKey));
                     // Prikazujemo poslatu poruku u Client prozoru
                     Log(string.Format("{0} (You): {1}", obj.username, sendTextBox.Text));
@@ -591,14 +575,8 @@ namespace Client
                     sendTextBox.Clear();
                     if (connected) // ako je konektovan
                     {
-                        // serijalizacija
-                        //JavaScriptSerializer json = new JavaScriptSerializer();
-                       //System.Diagnostics.Debug.WriteLine(json.Serialize(secretMessage));
-
                         // saljemo serijaliyovanu poruku serveru
                         Send(Poruka(secretMessage));
-                        //Send(json.Serialize(secretMessage));
-                        //SendEncrypted(secretMessage);
 
                     }
                 }
@@ -608,14 +586,11 @@ namespace Client
         //formatiranje stringa
         static string RemoveNonAlphaNumeric(string input)
         {
-            // Regex pattern to match non-alphanumeric characters
-            //string pattern = @"[^a-zA-Z0-9\s\p{P}]";
-            //string pattern = @"[^\p{L}0-9\s\p{P}đžšćč]";
+            // Regex sablon ya sredjivanje stringa
             string pattern = @"[^\p{L}0-9\s\p{P}đžšćč]+";
 
-            // Remove non-alphanumeric characters using Regex.Replace
+            // Uklanjanje karaktera koristenjem Regex.Replace
             string result = Regex.Replace(input, pattern, "");
-
             return result;
         }
 
@@ -650,16 +625,19 @@ namespace Client
             }
         }
 
+
+        //funkcija za dekripciju primljenih poruka
         private string Dekriptor(byte[] encrypted)
         {
 
-            //DiffieHellmanED.DiffieHellman DekriptorDK = new DiffieHellmanED.DiffieHellman();
-            //string podacioServeru = "\n server KLJUC  " + Convert.ToBase64String(serverKey) + "\n server IV  " + Convert.ToBase64String(serverIV);
-            string dekriptovanaPoruka = klijentDK.Decrypt(serverKey, encrypted, serverIV)+Environment.NewLine;
+
+
+            string dekriptovanaPoruka = klijentDK.Decrypt(serverKey, encrypted, serverIV) + Environment.NewLine;
             return dekriptovanaPoruka;
-           // return podacioServeru;
         }
 
+
+        //priprema poruke za slanje sa svim potrebnim podacima
         private string Poruka(byte[] enkriptovana)
         {
             Dictionary<string, string> servMsg = new Dictionary<string, string>();

@@ -50,7 +50,7 @@ namespace Server
 
         public Server()
         {
-            
+
             InitializeComponent();
         }
 
@@ -206,15 +206,12 @@ namespace Server
                     {
                         // Svi podaci su primljeni, obradite poruku
                         string msg = string.Format("{0}: {1}", obj.username, obj.data);
-                        string enkriptovanap = string.Format("{0}",obj.data);
-                        //System.Diagnostics.Debug.WriteLine(obj.data.ToString());
+                        string enkriptovanap = string.Format("{0}", obj.data);
                         // Dekripcija primljene poruke
 
-                        JavaScriptSerializer json = new JavaScriptSerializer(); // feel free to use JSON serializer
+                        JavaScriptSerializer json = new JavaScriptSerializer();
                         //rjecnik za primljenje podatke koji se sastoji od kljuca i podataka
                         Dictionary<string, string> data = json.Deserialize<Dictionary<string, string>>(obj.data.ToString());
-
-                        //Dictionary<string, byte[]> publicKeyData = json.Deserialize<Dictionary<string, byte[]>>(obj.data.ToString());
 
                         //primanje public key servera
                         if (data.ContainsKey("publicKey"))
@@ -223,18 +220,14 @@ namespace Server
                             dekriptovana = serverDK.Decrypt(Convert.FromBase64String(data["publicKey"]), Convert.FromBase64String(data["message"]), Convert.FromBase64String(data["IV"]));
                         }
 
-                        
-                        
+
+
                         string dekriptovanaSaUserInfo = string.Format("{0}: {1}", obj.username, dekriptovana);
                         // Prikaz dekriptovane poruke
 
                         Log(RemoveNonAlphaNumeric(dekriptovanaSaUserInfo));
 
-                       /* System.Diagnostics.Debug.WriteLine(enkriptovanap);
-                        System.Diagnostics.Debug.WriteLine("kljuc"+Convert.ToBase64String(KLJUC));
-                        System.Diagnostics.Debug.WriteLine("IV"+Convert.ToBase64String(IV));*/
 
-                        
 
                         // Slanje dekriptovane poruke drugim klijentima
                         //Send(dekriptovanaSaUserInfo, obj.id);
@@ -246,7 +239,7 @@ namespace Server
                             if (klijent.Value.id != obj.id)
                             {
                                 MyClient tmp = new MyClient();
-                                
+
                                 long id = klijent.Value.id;
                                 byte[] pubKey = Convert.FromBase64String(klijent.Value.keyString.ToString());
                                 byte[] IV = Convert.FromBase64String(klijent.Value.IVString.ToString());
@@ -262,21 +255,18 @@ namespace Server
                                 tmp.keyString = klijent.Value.keyString;
                                 tmp.stream = klijent.Value.stream;
                                 Send(Poruka(secretMessage), tmp);
-                                //Send(dekriptovana+"foreach", obj.id);
                                 // Briše podatke StringBuilder-a za sledeću poruku
-                               // obj.data.Clear();
                                 tmp.data.Clear();
                                 // Signalizira niti na čekanju da je operacija završena
-                               // obj.handle.Set();
                                 tmp.handle.Set();
                             }
                         }
 
                         foreachWatch.Stop();
-                        
-                        
+
+
                         System.Diagnostics.Debug.WriteLine("PARALELNI foreach");
-                        
+
                         var parallelWatch = System.Diagnostics.Stopwatch.StartNew();
                         //enkripcija kroz PARALELNI foreach
                         Parallel.ForEach(clients, klijent =>
@@ -310,7 +300,7 @@ namespace Server
                         System.Diagnostics.Debug.WriteLine("Broj klijenata: " + Convert.ToString(clients.Count));
                         System.Diagnostics.Debug.WriteLine("foreach exec time: " + Convert.ToString(foreachWatch.Elapsed));
                         System.Diagnostics.Debug.WriteLine("parallel foreach exec time: " + Convert.ToString(parallelWatch.Elapsed));
-                        
+
                         // Briše podatke StringBuilder-a za sledeću poruku
                         obj.data.Clear();
                         // Signalizira niti na čekanju da je operacija završena
@@ -373,9 +363,9 @@ namespace Server
                     else
                     {
                         // Deserijalizacija primljenih podataka u rječnik (dictionary)
-                        JavaScriptSerializer json = new JavaScriptSerializer(); // feel free to use JSON serializer
+                        JavaScriptSerializer json = new JavaScriptSerializer();
                         Dictionary<string, string> data = json.Deserialize<Dictionary<string, string>>(obj.data.ToString());
-                        // Provera da li obavezna polja postoje u podacima i da li se podudaraju sa očekivanim vrijednostima
+                        // Provjera da li obavezna polja postoje u podacima i da li se podudaraju sa očekivanim vrijednostima
                         if (!data.ContainsKey("username") || data["username"].Length < 1 || !data.ContainsKey("key") || !data["key"].Equals(keyTextBox.Text))
                         {
                             // Zatvaranje klijentske konekcije ako su podaci nevažeći
@@ -388,29 +378,30 @@ namespace Server
                             obj.pubKey = Convert.FromBase64String(data["pubKey"]);
                             obj.keyString.Append(data["pubKey"]);
                             obj.IVString.Append(data["IV"]);
+
+                            /*DIJAGNOSTIKA*/
                             KLJUC = obj.pubKey;
                             obj.IV = Convert.FromBase64String(data["IV"]);
-                            System.Diagnostics.Debug.WriteLine("obj.IV = "+Convert.ToBase64String(obj.IV));
-                            System.Diagnostics.Debug.WriteLine("obj.IVString = "+obj.IVString);
+                            IV = obj.IV;
+                            System.Diagnostics.Debug.WriteLine("obj.IV = " + Convert.ToBase64String(obj.IV));
+                            System.Diagnostics.Debug.WriteLine("obj.IVString = " + obj.IVString);
                             System.Diagnostics.Debug.WriteLine("obj.pubKey = " + Convert.ToBase64String(obj.pubKey));
                             System.Diagnostics.Debug.WriteLine("obj.keyString = " + obj.keyString);
-                            IV = obj.IV;
                             //*****************//
-                            // System.Diagnostics.Debug.WriteLine(Encoding.UTF8.GetString(obj.pubKey));
 
                             // Slanje serverovog javnog ključa klijentu
-                            Dictionary<string, string> servData = new Dictionary<string, string>();                                                       
+                            Dictionary<string, string> servData = new Dictionary<string, string>();
                             servData.Add("publicKey", Convert.ToBase64String(serverDK.PublicKey));
                             servData.Add("IV", Convert.ToBase64String(serverDK.IV));
-                            JavaScriptSerializer jsonServ = new JavaScriptSerializer(); 
-                            Send(jsonServ.Serialize(servData),obj);
-                            
-                            
+                            JavaScriptSerializer jsonServ = new JavaScriptSerializer();
+                            Send(jsonServ.Serialize(servData), obj);
+
+
                             Send("{\"status\": \"authorized\"}", obj);
 
                             //logovanje podataka i poslatih
                             //potrebno je da postoji podudaranje kako bi znali da se salju ispravni podaci
-                            System.Diagnostics.Debug.WriteLine("Kljuc servera "+Convert.ToBase64String(serverDK.PublicKey));
+                            System.Diagnostics.Debug.WriteLine("Kljuc servera " + Convert.ToBase64String(serverDK.PublicKey));
                             System.Diagnostics.Debug.WriteLine("IV servera " + Convert.ToBase64String(serverDK.IV));
                             System.Diagnostics.Debug.WriteLine("Poslati kljuc servera " + servData["publicKey"]);
                             System.Diagnostics.Debug.WriteLine("Poslati IV servera " + servData["IV"]);
@@ -459,7 +450,7 @@ namespace Server
                     {
                         success = true;
 
-                       
+
                         break;
                     }
                 }
@@ -483,7 +474,7 @@ namespace Server
                 // dodajemo klijenta u grid
                 AddToGrid(obj.id, obj.username.ToString());
                 // prikazuje poruku sa imenom klijenta
-                string msg = string.Format("{0} has connected", obj.username);                
+                string msg = string.Format("{0} has connected", obj.username);
                 // Logovanje poruke
                 Log(SystemMsg(msg));
                 // Slanje poruke ostalim klijentima
@@ -515,7 +506,7 @@ namespace Server
                         tmpConnected.handle.Set();
                     }
                 }
-               
+
 
 
 
@@ -625,23 +616,19 @@ namespace Server
                         tmpDisconnected.keyString = klijent.Value.keyString;
                         tmpDisconnected.stream = klijent.Value.stream;
                         Send(Poruka(secretMessage), tmpDisconnected);
-                        //Send(dekriptovana+"foreach", obj.id);
                         // Briše podatke StringBuilder-a za sledeću poruku
-                        // obj.data.Clear();
                         tmpDisconnected.data.Clear();
                         // Signalizira niti na čekanju da je operacija završena
-                        // obj.handle.Set();
                         tmpDisconnected.handle.Set();
                     }
                 }
-               // Send(msg, tmp.id);
             }
         }
 
         // metoda za osluskivanje na ip adresi i portu 
         private void Listener(IPAddress ip, int port)
         {
-            
+
             TcpListener listener = null;
             try
             {
@@ -662,7 +649,7 @@ namespace Server
                             //postavljanje pubkey i iv za cuvanje u rjecniku
                             obj.keyString = new StringBuilder();
                             obj.IVString = new StringBuilder();
-                            obj.username = new StringBuilder();                            
+                            obj.username = new StringBuilder();
                             obj.client = listener.AcceptTcpClient();
                             obj.stream = obj.client.GetStream();
                             obj.buffer = new byte[obj.client.ReceiveBufferSize];
@@ -887,13 +874,13 @@ namespace Server
 
                     foreach (KeyValuePair<long, MyClient> klijent in clients)
                     {
-                        
-                            MyClient tmpSend = new MyClient();
 
-                            long id = klijent.Value.id;
-                            byte[] pubKey = Convert.FromBase64String(klijent.Value.keyString.ToString());
-                            byte[] IV = Convert.FromBase64String(klijent.Value.IVString.ToString());
-                            byte[] secretMessage = serverDK.Encrypt(pubKey, string.Format("{0}: {1}", usernameTextBox.Text.Trim(), msg));
+                        MyClient tmpSend = new MyClient();
+
+                        long id = klijent.Value.id;
+                        byte[] pubKey = Convert.FromBase64String(klijent.Value.keyString.ToString());
+                        byte[] IV = Convert.FromBase64String(klijent.Value.IVString.ToString());
+                        byte[] secretMessage = serverDK.Encrypt(pubKey, string.Format("{0}: {1}", usernameTextBox.Text.Trim(), msg));
                         tmpSend.id = id;
                         tmpSend.pubKey = pubKey;
                         tmpSend.buffer = klijent.Value.buffer;
@@ -904,17 +891,13 @@ namespace Server
                         tmpSend.IVString = klijent.Value.IVString;
                         tmpSend.keyString = klijent.Value.keyString;
                         tmpSend.stream = klijent.Value.stream;
-                            Send(Poruka(secretMessage), tmpSend);
-                        //Send(dekriptovana+"foreach", obj.id);
+                        Send(Poruka(secretMessage), tmpSend);
                         // Briše podatke StringBuilder-a za sledeću poruku
-                        // obj.data.Clear();
                         tmpSend.data.Clear();
                         // Signalizira niti na čekanju da je operacija završena
-                        // obj.handle.Set();
                         tmpSend.handle.Set();
-                        
+
                     }
-                   // Send(string.Format("{0}: {1}", usernameTextBox.Text.Trim(), msg));
                 }
             }
         }
@@ -956,14 +939,11 @@ namespace Server
         //formatiranje stringa
         static string RemoveNonAlphaNumeric(string input)
         {
-            // Regex pattern to match non-alphanumeric characters
-            //string pattern = @"[^a-zA-Z0-9\s\p{P}]";
-            //string pattern = @"[^\p{L}0-9\s\p{P}đžšćč]";
+            // Regex sablon ya sredjivanje stringa
             string pattern = @"[^\p{L}0-9\s\p{P}đžšćč]+";
 
-            // Remove non-alphanumeric characters using Regex.Replace
+            // Uklanjanje karaktera koristenjem Regex.Replace
             string result = Regex.Replace(input, pattern, "");
-
             return result;
         }
 
@@ -983,7 +963,7 @@ namespace Server
             active = false;
             Disconnect();
         }
-        
+
 
         // Ova metoda se poziva kada se klikne na ćeliju u DataGridView kontrolu za prikaz klijenata
         // Provjerava se da li je kliknuta ćelija u koloni "dc" (disconnect)
@@ -1017,6 +997,8 @@ namespace Server
             }
         }
 
+
+        //priprema poruku za slanje sa potrebnim podacima
         private string Poruka(byte[] enkriptovana)
         {
             Dictionary<string, string> servMsg = new Dictionary<string, string>();
@@ -1026,6 +1008,11 @@ namespace Server
             JavaScriptSerializer jsonServ = new JavaScriptSerializer();
 
             return (jsonServ.Serialize(servMsg));
+        }
+
+        private void portTextBox_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

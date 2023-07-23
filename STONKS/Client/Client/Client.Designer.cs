@@ -87,7 +87,7 @@
             this.portTextBox.Size = new System.Drawing.Size(132, 20);
             this.portTextBox.TabIndex = 25;
             this.portTextBox.TabStop = false;
-            this.portTextBox.Text = "9000";
+            this.portTextBox.Text = "1389";
             this.portTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // logLabel
@@ -210,7 +210,7 @@
             this.versionLabel.Name = "versionLabel";
             this.versionLabel.Size = new System.Drawing.Size(28, 13);
             this.versionLabel.TabIndex = 40;
-            this.versionLabel.Text = "v1.5";
+            this.versionLabel.Text = "v1.9";
             // 
             // checkBox
             // 

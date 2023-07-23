@@ -20,3 +20,25 @@ D:\ \etf\rii 4 godina\PRS\TONKS\chat-app-master\src\Client\Client\bin\Debug\Sys
 D:\ \etf\rii 4 godina\PRS\TONKS\chat-app-master\src\Client\Client\bin\Debug\Microsoft.Bcl.AsyncInterfaces.dll
 D:\ \etf\rii 4 godina\PRS\TONKS\chat-app-master\src\Client\Client\bin\Debug\System.Buffers.dll
 D:\ \etf\rii 4 godina\PRS\TONKS\chat-app-master\src\Client\Client\obj\Debug\Client.exe.config
+C:\Users\kolfi\OneDrive\Documents\GitHub\PRS\STONKS\Client\Client\bin\Debug\Client.exe.config
+C:\Users\kolfi\OneDrive\Documents\GitHub\PRS\STONKS\Client\Client\bin\Debug\Client.exe
+C:\Users\kolfi\OneDrive\Documents\GitHub\PRS\STONKS\Client\Client\bin\Debug\Client.pdb
+C:\Users\kolfi\OneDrive\Documents\GitHub\PRS\STONKS\Client\Client\bin\Debug\DiffieHellmanED.dll
+C:\Users\kolfi\OneDrive\Documents\GitHub\PRS\STONKS\Client\Client\bin\Debug\Newtonsoft.Json.dll
+C:\Users\kolfi\OneDrive\Documents\GitHub\PRS\STONKS\Client\Client\bin\Debug\System.Text.Json.dll
+C:\Users\kolfi\OneDrive\Documents\GitHub\PRS\STONKS\Client\Client\bin\Debug\System.Memory.dll
+C:\Users\kolfi\OneDrive\Documents\GitHub\PRS\STONKS\Client\Client\bin\Debug\System.Text.Encodings.Web.dll
+C:\Users\kolfi\OneDrive\Documents\GitHub\PRS\STONKS\Client\Client\bin\Debug\System.Numerics.Vectors.dll
+C:\Users\kolfi\OneDrive\Documents\GitHub\PRS\STONKS\Client\Client\bin\Debug\System.Threading.Tasks.Extensions.dll
+C:\Users\kolfi\OneDrive\Documents\GitHub\PRS\STONKS\Client\Client\bin\Debug\Microsoft.Bcl.AsyncInterfaces.dll
+C:\Users\kolfi\OneDrive\Documents\GitHub\PRS\STONKS\Client\Client\bin\Debug\System.Buffers.dll
+C:\Users\kolfi\OneDrive\Documents\GitHub\PRS\STONKS\Client\Client\bin\Debug\DiffieHellmanED.pdb
+C:\Users\kolfi\OneDrive\Documents\GitHub\PRS\STONKS\Client\Client\obj\Debug\Client.csproj.AssemblyReference.cache
+C:\Users\kolfi\OneDrive\Documents\GitHub\PRS\STONKS\Client\Client\obj\Debug\Client.exe.config
+C:\Users\kolfi\OneDrive\Documents\GitHub\PRS\STONKS\Client\Client\obj\Debug\Client.Client.resources
+C:\Users\kolfi\OneDrive\Documents\GitHub\PRS\STONKS\Client\Client\obj\Debug\Client.Properties.Resources.resources
+C:\Users\kolfi\OneDrive\Documents\GitHub\PRS\STONKS\Client\Client\obj\Debug\Client.csproj.GenerateResource.cache
+C:\Users\kolfi\OneDrive\Documents\GitHub\PRS\STONKS\Client\Client\obj\Debug\Client.csproj.CoreCompileInputs.cache
+C:\Users\kolfi\OneDrive\Documents\GitHub\PRS\STONKS\Client\Client\obj\Debug\Client.csproj.CopyComplete
+C:\Users\kolfi\OneDrive\Documents\GitHub\PRS\STONKS\Client\Client\obj\Debug\Client.exe
+C:\Users\kolfi\OneDrive\Documents\GitHub\PRS\STONKS\Client\Client\obj\Debug\Client.pdb
